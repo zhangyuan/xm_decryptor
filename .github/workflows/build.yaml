@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          # - os: macos-15
+          #   arch: arm64
+          - os: macos-15-intel
+            arch: x86_64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust (stable)
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          rustflags: -W warnings
+          components: rustfmt,clippy
+
+      - name: Show rustc and cargo versions
+        run: |
+          rustc --version
+          cargo --version
+
+      # - name: Cargo clippy
+      #   run: cargo clippy --locked --all-targets --all-features -- -D warnings
+
+      # - name: Cargo fmt
+      #   run: cargo fmt --check
+
+      - name: Build (debug)
+        shell: bash
+        run: cargo build --locked
+
+      - name: Build (release)
+        shell: bash
+        run: cargo build --locked --release
+
+      - name: Upload release binary (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xm_decryptor-linux
+          path: target/release/xm_decryptor
+
+      - name: Upload release binary (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xm_decryptor-windows
+          path: target\release\xm_decryptor.exe
+
+      - name: Upload release binary (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xm_decryptor-macOS-${{ matrix.arch }}
+          path: target/release/xm_decryptor
+          retention-days: 3

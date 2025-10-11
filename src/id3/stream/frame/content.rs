@@ -253,7 +253,7 @@ impl<W: io::Write> Encoder<W> {
         content: &MpegLocationLookupTable,
     ) -> crate::id3::Result<()> {
         let ref_packed_size = content.bits_for_bytes + content.bits_for_millis;
-        if ref_packed_size % 4 != 0 {
+        if !ref_packed_size.is_multiple_of(4) {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
                 "MLLT bits_for_bytes + bits_for_millis must be a multiple of 4",
