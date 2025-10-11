@@ -40,8 +40,8 @@ jobs:
 
       - name: Setup Rust (stable)
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      #   with:
-      #     components: rustfmt,clippy
+        # with:
+        #   components: rustfmt,clippy
 
       - name: Show rustc and cargo versions
         run: |
@@ -55,11 +55,12 @@ jobs:
       #   run: cargo fmt --check
 
       - name: Build (debug)
-        run: cargo build --locked
+        shell: bash
+        run: RUSTFLAGS="-A warnings" cargo build --locked
 
       - name: Build (release)
-        run: |
-          cargo build --locked --release
+        shell: bash
+        run: RUSTFLAGS="-A warnings" cargo build --locked --release
 
       - name: Upload release binary (Linux)
         if: runner.os == 'Linux'
