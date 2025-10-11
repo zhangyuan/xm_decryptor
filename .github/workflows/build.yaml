@@ -56,11 +56,11 @@ jobs:
 
       - name: Build (debug)
         shell: bash
-        run: RUSTFLAGS="-A warnings" cargo build --locked
+        run: RUSTFLAGS="-Awarnings" cargo build --locked
 
       - name: Build (release)
         shell: bash
-        run: RUSTFLAGS="-A warnings" cargo build --locked --release
+        run: RUSTFLAGS="-Awarnings" cargo build --locked --release
 
       - name: Upload release binary (Linux)
         if: runner.os == 'Linux'
